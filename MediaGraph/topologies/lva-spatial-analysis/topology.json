@@ -30,7 +30,7 @@
         {
           "name": "frameRate",
           "type": "String",
-          "description": "Rate of the frames per second to send to the spatialAnalysis module.",
+          "description": "Limit the rate of the frames per second to send to the computerVisionExtension.",
           "default": "2"
         },
         {
