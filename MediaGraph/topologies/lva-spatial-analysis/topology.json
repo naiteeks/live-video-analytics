@@ -30,7 +30,7 @@
         {
           "name": "frameRate",
           "type": "String",
-          "description": "Rate of the frames per second to be received from LVA.",
+          "description": "Rate of the frames per second to send to the spatialAnalysis module.",
           "default": "2"
         },
         {
