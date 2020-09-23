@@ -2,7 +2,7 @@
     "@apiVersion": "1.0",
     "name": "InferencingWithCVExtension",
     "properties": {
-      "description": "Analyzing live video using spatialAnalysis Extension to send images to an external inference engine",
+      "description": "Analyzing Live Video with Computer Vision for Spatial Analysis",
       "parameters": [
         {
           "name": "rtspUserName",
