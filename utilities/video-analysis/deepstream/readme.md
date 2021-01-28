@@ -14,6 +14,8 @@ Additional open source technologies included are [nginx](https://www.nginx.com/)
 2. [Visual Studio Code](https://code.visualstudio.com/) with [Azure IoT Tools extension](https://marketplace.visualstudio.com/items?itemName=vsciot-vscode.azure-iot-tools).
 3. A device with [IoT Edge runtime](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-install-iot-edge-windows) installed and [registered as an IoT Edge device](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-register-device). You can use a Linux machine or a Windows machine with [WSL2](https://docs.microsoft.com/en-us/windows/wsl/about#what-is-wsl-2) for this purpose.
 
+> [!IMPORTANT]
+> This docker container only supports **Intel x86 and amd64** architectures. Please check the architecture of your edge device before continuing.
 ## Building the container image
 
 Build the container image (should take some minutes) by running the following Docker command from the same directory as this readme file.
