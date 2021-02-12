@@ -36,11 +36,11 @@ IOT_EDGE_VM_ADMIN='lvaadmin'
 IOT_EDGE_VM_PWD="Password@$(shuf -i 1000-9999 -n 1)"
 CLOUD_SHELL_FOLDER="$HOME/clouddrive/lva-sample"
 APPDATA_FOLDER_ON_DEVICE="/var/lib/azuremediaservices"
-EFLOW_FOLDER="$HOME/lva_eflow"
-EFLOW_ARM_TEMPLATE_URL="$BASE_URL/eflow_deploy.json"
-EFLOW_DEPLOYMENT_MANIFEST_FILE="$EFLOW_FOLDER/deployment.amd64.json"
-EFLOW_ENV_FILE="$EFLOW_FOLDER/.env"
-EFLOW_APP_SETTINGS_FILE="$EFLOW_FOLDER/appsettings.json"
+BYOD_FOLDER="$HOME/lva_byod"
+BYOD_ARM_TEMPLATE_URL="$BASE_URL/byod_deploy.json"
+BYOD_DEPLOYMENT_MANIFEST_FILE="$BYOD_FOLDER/deployment.amd64.json"
+BYOD_ENV_FILE="$BYOD_FOLDER/.env"
+BYOD_APP_SETTINGS_FILE="$BYOD_FOLDER/appsettings.json"
 
 checkForError() {
     if [ $? -ne 0 ]; then
@@ -73,9 +73,9 @@ if [ "$AZURE_HTTP_USER_AGENT" = "cloud-shell/1.0" ]; then
     CLOUD_INIT_FILE="$CLOUD_SHELL_FOLDER/$CLOUD_INIT_FILE"
     DEPLOYMENT_MANIFEST_FILE="$CLOUD_SHELL_FOLDER/$DEPLOYMENT_MANIFEST_FILE"
     ROLE_DEFINITION_FILE="$CLOUD_SHELL_FOLDER/$ROLE_DEFINITION_FILE"
-    EFLOW_ENV_FILE="$EFLOW_ENV_FILE"
-    EFLOW_DEPLOYMENT_MANIFEST_FILE="$EFLOW_DEPLOYMENT_MANIFEST_FILE"
-	EFLOW_APP_SETTINGS_FILE="$EFLOW_APP_SETTINGS_FILE"
+    BYOD_ENV_FILE="$BYOD_ENV_FILE"
+    BYOD_DEPLOYMENT_MANIFEST_FILE="$BYOD_DEPLOYMENT_MANIFEST_FILE"
+	BYOD_APP_SETTINGS_FILE="$BYOD_APP_SETTINGS_FILE"
 fi
 echo "Initialzing output files.
 This overwrites any output files previously generated."
@@ -83,9 +83,9 @@ mkdir -p $(dirname $ENV_FILE) && echo -n "" > $ENV_FILE
 mkdir -p $(dirname $APP_SETTINGS_FILE) && echo -n "" > $APP_SETTINGS_FILE
 mkdir -p $(dirname $VM_CREDENTIALS_FILE) && echo -n "" > $VM_CREDENTIALS_FILE
 mkdir -p $(dirname $DEPLOYMENT_MANIFEST_FILE) && echo -n "" > $DEPLOYMENT_MANIFEST_FILE
-mkdir -p $(dirname $EFLOW_ENV_FILE) && echo -n "" > $EFLOW_ENV_FILE
-mkdir -p $(dirname $EFLOW_APP_SETTINGS_FILE) && echo -n "" > $EFLOW_APP_SETTINGS_FILE
-mkdir -p $(dirname $EFLOW_DEPLOYMENT_MANIFEST_FILE) && echo -n "" > $EFLOW_DEPLOYMENT_MANIFEST_FILE
+mkdir -p $(dirname $BYOD_ENV_FILE) && echo -n "" > $BYOD_ENV_FILE
+mkdir -p $(dirname $BYOD_APP_SETTINGS_FILE) && echo -n "" > $BYOD_APP_SETTINGS_FILE
+mkdir -p $(dirname $BYOD_DEPLOYMENT_MANIFEST_FILE) && echo -n "" > $BYOD_DEPLOYMENT_MANIFEST_FILE
 
 # install the Azure IoT extension
 echo -e "Checking ${BLUE}azure-iot${NC} extension."
@@ -391,9 +391,9 @@ elif [[ "$OWN_DEVICE" = "Y" ]]; then
 
     # deploy resources using a template
     echo -e "\nNow we'll deploy some resources to ${GREEN}${RESOURCE_GROUP}.${NC} This typically takes a few minutes."
-    echo -e "\nThe resources are defined in a template here:- ${BLUE}${EFLOW_ARM_TEMPLATE_URL}${NC}"
+    echo -e "\nThe resources are defined in a template here:- ${BLUE}${BYOD_ARM_TEMPLATE_URL}${NC}"
 	
-    ROLE_DEFINITION_NAME=$(az deployment group create --resource-group $RESOURCE_GROUP --template-file $EFLOW_ARM_TEMPLATE_URL -p hubName=$IOTHUB --query properties.outputs.roleName.value | tr -d \")
+    ROLE_DEFINITION_NAME=$(az deployment group create --resource-group $RESOURCE_GROUP --template-file $BYOD_ARM_TEMPLATE_URL -p hubName=$IOTHUB --query properties.outputs.roleName.value | tr -d \")
     checkForError
     
     # query the resource group to see what has been deployed
@@ -460,63 +460,63 @@ elif [[ "$OWN_DEVICE" = "Y" ]]; then
     az ams streaming-endpoint start --resource-group $RESOURCE_GROUP --account-name $AMS_ACCOUNT -n default --no-wait
 
     # create a directory to store the env, appsettings and the deployment maifest file
-    mkdir $EFLOW_FOLDER
+    mkdir $BYOD_FOLDER
 
     # write env file for edge deployment
-    echo "SUBSCRIPTION_ID=\"$SUBSCRIPTION_ID\"" >> $EFLOW_ENV_FILE
-    echo "RESOURCE_GROUP=\"$RESOURCE_GROUP\"" >> $EFLOW_ENV_FILE
-    echo "AMS_ACCOUNT=\"$AMS_ACCOUNT\"" >> $EFLOW_ENV_FILE
-    echo "IOTHUB_CONNECTION_STRING=$IOTHUB_CONNECTION_STRING" >> $EFLOW_ENV_FILE
-    echo "AAD_TENANT_ID=$AAD_TENANT_ID" >> $EFLOW_ENV_FILE
-    echo "AAD_SERVICE_PRINCIPAL_ID=$AAD_SERVICE_PRINCIPAL_ID" >> $EFLOW_ENV_FILE
-    echo "AAD_SERVICE_PRINCIPAL_SECRET=$AAD_SERVICE_PRINCIPAL_SECRET" >> $EFLOW_ENV_FILE
-    echo "VIDEO_INPUT_FOLDER_ON_DEVICE=\"/home/lvaadmin/samples/input\"" >> $EFLOW_ENV_FILE
-    echo "VIDEO_OUTPUT_FOLDER_ON_DEVICE=\"/var/media\"" >> $EFLOW_ENV_FILE
-    echo "APPDATA_FOLDER_ON_DEVICE=\"/var/lib/azuremediaservices\"" >> $EFLOW_ENV_FILE
-    echo "CONTAINER_REGISTRY_USERNAME_myacr=$CONTAINER_REGISTRY_USERNAME" >> $EFLOW_ENV_FILE
-    echo "CONTAINER_REGISTRY_PASSWORD_myacr=$CONTAINER_REGISTRY_PASSWORD" >> $EFLOW_ENV_FILE
+    echo "SUBSCRIPTION_ID=\"$SUBSCRIPTION_ID\"" >> $BYOD_ENV_FILE
+    echo "RESOURCE_GROUP=\"$RESOURCE_GROUP\"" >> $BYOD_ENV_FILE
+    echo "AMS_ACCOUNT=\"$AMS_ACCOUNT\"" >> $BYOD_ENV_FILE
+    echo "IOTHUB_CONNECTION_STRING=$IOTHUB_CONNECTION_STRING" >> $BYOD_ENV_FILE
+    echo "AAD_TENANT_ID=$AAD_TENANT_ID" >> $BYOD_ENV_FILE
+    echo "AAD_SERVICE_PRINCIPAL_ID=$AAD_SERVICE_PRINCIPAL_ID" >> $BYOD_ENV_FILE
+    echo "AAD_SERVICE_PRINCIPAL_SECRET=$AAD_SERVICE_PRINCIPAL_SECRET" >> $BYOD_ENV_FILE
+    echo "VIDEO_INPUT_FOLDER_ON_DEVICE=\"/home/lvaadmin/samples/input\"" >> $BYOD_ENV_FILE
+    echo "VIDEO_OUTPUT_FOLDER_ON_DEVICE=\"/var/media\"" >> $BYOD_ENV_FILE
+    echo "APPDATA_FOLDER_ON_DEVICE=\"/var/lib/azuremediaservices\"" >> $BYOD_ENV_FILE
+    echo "CONTAINER_REGISTRY_USERNAME_myacr=$CONTAINER_REGISTRY_USERNAME" >> $BYOD_ENV_FILE
+    echo "CONTAINER_REGISTRY_PASSWORD_myacr=$CONTAINER_REGISTRY_PASSWORD" >> $BYOD_ENV_FILE
 
     echo -e "
     We've generated some configuration files for the deployed resource.
     This .env can be used with the ${GREEN}Azure IoT Tools${NC} extension in ${GREEN}Visual Studio Code${NC}.
     You can find it here:
-    ${BLUE}${EFLOW_ENV_FILE}${NC}"
+    ${BLUE}${BYOD_ENV_FILE}${NC}"
 
     # write appsettings for sample code
-    echo "{" >> $EFLOW_APP_SETTINGS_FILE
-    echo "    \"IoThubConnectionString\" : $IOTHUB_CONNECTION_STRING," >> $EFLOW_APP_SETTINGS_FILE
-    echo "    \"deviceId\" : \"$EDGE_DEVICE_ID\"," >> $EFLOW_APP_SETTINGS_FILE
-    echo "    \"moduleId\" : \"lvaEdge\"" >> $EFLOW_APP_SETTINGS_FILE
-    echo -n "}" >> $EFLOW_APP_SETTINGS_FILE
+    echo "{" >> $BYOD_APP_SETTINGS_FILE
+    echo "    \"IoThubConnectionString\" : $IOTHUB_CONNECTION_STRING," >> $BYOD_APP_SETTINGS_FILE
+    echo "    \"deviceId\" : \"$EDGE_DEVICE_ID\"," >> $BYOD_APP_SETTINGS_FILE
+    echo "    \"moduleId\" : \"lvaEdge\"" >> $BYOD_APP_SETTINGS_FILE
+    echo -n "}" >> $BYOD_APP_SETTINGS_FILE
 
     # set up deployment manifest
-    curl -s $DEPLOYMENT_MANIFEST_URL > $EFLOW_DEPLOYMENT_MANIFEST_FILE
+    curl -s $DEPLOYMENT_MANIFEST_URL > $BYOD_DEPLOYMENT_MANIFEST_FILE
 
-    sed -i "s/\$CONTAINER_REGISTRY_USERNAME_myacr/$CONTAINER_REGISTRY_USERNAME/" $EFLOW_DEPLOYMENT_MANIFEST_FILE
-    sed -i "s/\$CONTAINER_REGISTRY_PASSWORD_myacr/${CONTAINER_REGISTRY_PASSWORD//\//\\/}/" $EFLOW_DEPLOYMENT_MANIFEST_FILE
-    sed -i "s/\$VIDEO_INPUT_FOLDER_ON_DEVICE/\/home\/lvaadmin\/samples\/input/" $EFLOW_DEPLOYMENT_MANIFEST_FILE
-    sed -i "s/\$SUBSCRIPTION_ID/$SUBSCRIPTION_ID/" $EFLOW_DEPLOYMENT_MANIFEST_FILE
-    sed -i "s/\$RESOURCE_GROUP/$RESOURCE_GROUP/" $EFLOW_DEPLOYMENT_MANIFEST_FILE
-    sed -i "s/\$AMS_ACCOUNT/$AMS_ACCOUNT/" $EFLOW_DEPLOYMENT_MANIFEST_FILE
-    sed -i "s/\$AAD_TENANT_ID/$AAD_TENANT_ID/" $EFLOW_DEPLOYMENT_MANIFEST_FILE
-    sed -i "s/\$AAD_SERVICE_PRINCIPAL_ID/$AAD_SERVICE_PRINCIPAL_ID/" $EFLOW_DEPLOYMENT_MANIFEST_FILE
-    sed -i "s/\$AAD_SERVICE_PRINCIPAL_SECRET/$AAD_SERVICE_PRINCIPAL_SECRET/" $EFLOW_DEPLOYMENT_MANIFEST_FILE
-    sed -i "s/\$VIDEO_OUTPUT_FOLDER_ON_DEVICE/\/var\/media/" $EFLOW_DEPLOYMENT_MANIFEST_FILE
-    sed -i "s/\$APPDATA_FOLDER_ON_DEVICE/${APPDATA_FOLDER_ON_DEVICE//\//\\/}/" $EFLOW_DEPLOYMENT_MANIFEST_FILE
+    sed -i "s/\$CONTAINER_REGISTRY_USERNAME_myacr/$CONTAINER_REGISTRY_USERNAME/" $BYOD_DEPLOYMENT_MANIFEST_FILE
+    sed -i "s/\$CONTAINER_REGISTRY_PASSWORD_myacr/${CONTAINER_REGISTRY_PASSWORD//\//\\/}/" $BYOD_DEPLOYMENT_MANIFEST_FILE
+    sed -i "s/\$VIDEO_INPUT_FOLDER_ON_DEVICE/\/home\/lvaadmin\/samples\/input/" $BYOD_DEPLOYMENT_MANIFEST_FILE
+    sed -i "s/\$SUBSCRIPTION_ID/$SUBSCRIPTION_ID/" $BYOD_DEPLOYMENT_MANIFEST_FILE
+    sed -i "s/\$RESOURCE_GROUP/$RESOURCE_GROUP/" $BYOD_DEPLOYMENT_MANIFEST_FILE
+    sed -i "s/\$AMS_ACCOUNT/$AMS_ACCOUNT/" $BYOD_DEPLOYMENT_MANIFEST_FILE
+    sed -i "s/\$AAD_TENANT_ID/$AAD_TENANT_ID/" $BYOD_DEPLOYMENT_MANIFEST_FILE
+    sed -i "s/\$AAD_SERVICE_PRINCIPAL_ID/$AAD_SERVICE_PRINCIPAL_ID/" $BYOD_DEPLOYMENT_MANIFEST_FILE
+    sed -i "s/\$AAD_SERVICE_PRINCIPAL_SECRET/$AAD_SERVICE_PRINCIPAL_SECRET/" $BYOD_DEPLOYMENT_MANIFEST_FILE
+    sed -i "s/\$VIDEO_OUTPUT_FOLDER_ON_DEVICE/\/var\/media/" $BYOD_DEPLOYMENT_MANIFEST_FILE
+    sed -i "s/\$APPDATA_FOLDER_ON_DEVICE/${APPDATA_FOLDER_ON_DEVICE//\//\\/}/" $BYOD_DEPLOYMENT_MANIFEST_FILE
 
     echo -e "
     The appsettings.json file is for the .NET Core sample application.
     You can find it here:
-    ${BLUE}${EFLOW_APP_SETTINGS_FILE}${NC}"
+    ${BLUE}${BYOD_APP_SETTINGS_FILE}${NC}"
 
     echo -e "
     You can find the deployment manifest file here:
-    - ${BLUE}${EFLOW_DEPLOYMENT_MANIFEST_FILE}${NC}"
+    - ${BLUE}${BYOD_DEPLOYMENT_MANIFEST_FILE}${NC}"
 
     # deploy the manifest file
     echo -e "
     Here is the list of modules deployed to your edge device:"
-    az iot edge set-modules --hub-name $IOTHUB --device-id $EDGE_DEVICE_ID --content $EFLOW_FOLDER/deployment.amd64.json
+    az iot edge set-modules --hub-name $IOTHUB --device-id $EDGE_DEVICE_ID --content $BYOD_FOLDER/deployment.amd64.json
 
     #################################################################################################################################################
     echo -e "
