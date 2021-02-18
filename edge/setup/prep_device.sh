@@ -12,7 +12,6 @@ sudo mkdir -p /home/edgeuser
 
 sudo mkdir -p /home/edgeuser/samples
 sudo mkdir -p /home/edgeuser/samples/input
-sudo mkdir -p /home/edgeuser/samples/output
 
 sudo curl https://lvamedia.blob.core.windows.net/public/camera-300s.mkv --output /home/edgeuser/samples/input/camera-300s.mkv
 sudo curl https://lvamedia.blob.core.windows.net/public/lots_284.mkv --output /home/edgeuser/samples/input/lots_284.mkv
