@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #######################################################################################################################
-# This script creates folders and downlaods the media samples needed for running LVA
+# This script creates folders and downloads the media samples needed for running LVA
 #######################################################################################################################
 
 sudo mkdir /home/lvaadmin
