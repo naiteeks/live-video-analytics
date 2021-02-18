@@ -77,6 +77,7 @@ if [ "$AZURE_HTTP_USER_AGENT" = "cloud-shell/1.0" ]; then
     BYOD_DEPLOYMENT_MANIFEST_FILE="$BYOD_DEPLOYMENT_MANIFEST_FILE"
 	BYOD_APP_SETTINGS_FILE="$BYOD_APP_SETTINGS_FILE"
 fi
+
 echo "Initialzing output files.
 This overwrites any output files previously generated."
 mkdir -p $(dirname $ENV_FILE) && echo -n "" > $ENV_FILE
@@ -99,6 +100,7 @@ else
     echo -e "${BLUE}azure-iot${NC} extension is up to date."														  
 fi
 
+
 # check if we need to log in
 # if we are executing in the Azure Cloud Shell, we should already be logged in
 az account show -o none
@@ -107,12 +109,14 @@ if [ $? -ne 0 ]; then
     az login -o none
 fi
 
+
 # query subscriptions
 echo -e "\n${GREEN}You have access to the following subscriptions:${NC}"
 az account list --query '[].{name:name,"subscription Id":id}' --output table
 
 echo -e "\n${GREEN}Your current subscription is:${NC}"
 az account show --query '[name,id]'
+
 
 echo -e "
 You will need to use a subscription with permissions for creating service principals (owner role provides this).
@@ -141,11 +145,11 @@ else
 fi
 
 echo -e "
-Wpuld you like to use your own edge device as an IoT edge device?
+Would you like to use your own edge device as an IoT edge device?
 If so enter ${YELLOW}Y${NC} otherwise ${YELLOW}N${NC}."
 read -p ">> " temp
 OWN_DEVICE=${temp^^}
-
+ 
 ##################################################################################################################################################  
 if [[ "$OWN_DEVICE" == "N" ]]; then
     # choose a resource group
@@ -155,7 +159,6 @@ if [[ "$OWN_DEVICE" == "N" ]]; then
     Hit enter to use the default (${BLUE}${RESOURCE_GROUP}${NC})."
     read -p ">> " tmp
     RESOURCE_GROUP=${tmp:-$RESOURCE_GROUP}
-
     EXISTING=$(az group exists -g ${RESOURCE_GROUP})
 
     if ! $EXISTING; then
@@ -164,7 +167,7 @@ if [[ "$OWN_DEVICE" == "N" ]]; then
         az group create --name ${RESOURCE_GROUP} --location ${REGION} -o none
         checkForError
     fi
-    
+
     # deploy resources using a template
     echo -e "
     Now we'll deploy some resources to ${GREEN}${RESOURCE_GROUP}.${NC}
@@ -236,7 +239,7 @@ if [[ "$OWN_DEVICE" == "N" ]]; then
     #    curl -sL $ROLE_DEFINITION_URL > $ROLE_DEFINITION_FILE
     #    sed -i "s/\$SUBSCRIPTION_ID/$SUBSCRIPTION_ID/" $ROLE_DEFINITION_FILE
     #    sed -i "s/\$ROLE_DEFINITION_NAME/$ROLE_DEFINITION_NAME/" $ROLE_DEFINITION_FILE
-        
+  
     #    az role definition create --role-definition $ROLE_DEFINITION_FILE -o none
     #    checkForError
     # fi
@@ -247,7 +250,6 @@ if [[ "$OWN_DEVICE" == "N" ]]; then
     # create role assignment
     # az role assignment create --role "$ROLE_DEFINITION_NAME" --assignee-object-id $OBJECT_ID -o none
     # echo -e "The service principal with object id ${OBJECT_ID} is now linked with custom role ${BLUE}$ROLE_DEFINITION_NAME${NC}."
-
     # The brand-new AMS account has a standard streaming endpoint in stopped state. 
     # A Premium streaming endpoint is recommended when recording multiple days worth of video
 
@@ -262,12 +264,9 @@ if [[ "$OWN_DEVICE" == "N" ]]; then
     # deploy the IoT Edge runtime on a VM
     az vm show -n $IOT_EDGE_VM_NAME -g $RESOURCE_GROUP &> /dev/null
     if [ $? -ne 0 ]; then
-
         echo -e "
     Finally, we'll deploy a VM that will act as your IoT Edge device for using the LVA samples."
-
         curl -s $CLOUD_INIT_URL > $CLOUD_INIT_FILE
-
         # here be dragons
         # sometimes a / is present in the connection string and it breaks sed
         # this escapes the /
@@ -287,9 +286,7 @@ if [[ "$OWN_DEVICE" == "N" ]]; then
         --size "Standard_DS3_v2" \
         --tags sample=lva \
         --output none
-
         checkForError
-
         echo -e "
     To access the VM acting as the IoT Edge device, 
     - locate it in the portal 
@@ -366,7 +363,6 @@ if [[ "$OWN_DEVICE" == "N" ]]; then
 
     echo -e "
 
-
     Next, copy these generated files into your local copy of the sample app:
     - ${BLUE}${APP_SETTINGS_FILE}${NC}
     - ${BLUE}${ENV_FILE}${NC}
@@ -375,7 +371,9 @@ if [[ "$OWN_DEVICE" == "N" ]]; then
 
     Go to ${GREEN}https://aka.ms/lva-edge-quickstart${NC} to learn more about getting started with ${BLUE}Live Video Analytics${NC} on IoT Edge.					
     "
+
 ##################################################################################################################################################    
+
 elif [[ "$OWN_DEVICE" = "Y" ]]; then
     # get edge device information
     echo -e "\nWhat is the ${YELLOW}device ID${NC} of the Linux edge device that you want to use?"
@@ -392,10 +390,10 @@ elif [[ "$OWN_DEVICE" = "Y" ]]; then
     # deploy resources using a template
     echo -e "\nNow we'll deploy some resources to ${GREEN}${RESOURCE_GROUP}.${NC} This typically takes a few minutes."
     echo -e "\nThe resources are defined in a template here:- ${BLUE}${BYOD_ARM_TEMPLATE_URL}${NC}"
-	
+
     ROLE_DEFINITION_NAME=$(az deployment group create --resource-group $RESOURCE_GROUP --template-file $BYOD_ARM_TEMPLATE_URL -p hubName=$IOTHUB --query properties.outputs.roleName.value | tr -d \")
     checkForError
-    
+  
     # query the resource group to see what has been deployed
     # this includes everything in the resource group, and not just the resources deployed by the template
     echo -e "\nResource group now contains these resources:"
@@ -415,6 +413,7 @@ elif [[ "$OWN_DEVICE" = "Y" ]]; then
     - register an IoT Edge device with the IoT Hub
     - set up a service principal (app registration) for the Media Services account
     "
+
 
     # configure the hub for an edge device
     echo "registering device..."
@@ -437,8 +436,10 @@ elif [[ "$OWN_DEVICE" = "Y" ]]; then
     # capture config information
     re="AadTenantId:\s([0-9a-z\-]*)"
     AAD_TENANT_ID=$([[ "$AMS_CONNECTION" =~ $re ]] && echo ${BASH_REMATCH[1]})
+
     re="AadClientId:\s([0-9a-z\-]*)"
     AAD_SERVICE_PRINCIPAL_ID=$([[ "$AMS_CONNECTION" =~ $re ]] && echo ${BASH_REMATCH[1]})
+
     re="AadSecret:\s([0-9a-z\-]*)"
     AAD_SERVICE_PRINCIPAL_SECRET=$([[ "$AMS_CONNECTION" =~ $re ]] && echo ${BASH_REMATCH[1]})
 
@@ -450,7 +451,9 @@ elif [[ "$OWN_DEVICE" = "Y" ]]; then
 
     # The brand-new AMS account has a standard streaming endpoint in stopped state. 
     # A Premium streaming endpoint is recommended when recording multiple days worth of video
+
 	sleep 30
+
     echo -e "
     Updating the Media Services account to use one ${YELLOW}Premium${NC} streaming endpoint."
     az ams streaming-endpoint scale --resource-group $RESOURCE_GROUP --account-name $AMS_ACCOUNT -n default --scale-units 1
@@ -489,6 +492,7 @@ elif [[ "$OWN_DEVICE" = "Y" ]]; then
     echo "    \"moduleId\" : \"lvaEdge\"" >> $BYOD_APP_SETTINGS_FILE
     echo -n "}" >> $BYOD_APP_SETTINGS_FILE
 
+
     # set up deployment manifest
     curl -s $DEPLOYMENT_MANIFEST_URL > $BYOD_DEPLOYMENT_MANIFEST_FILE
 
@@ -526,5 +530,7 @@ elif [[ "$OWN_DEVICE" = "Y" ]]; then
 fi
 
 # cleanup
+
 # rm $ROLE_DEFINITION_FILE &> /dev/null
+
 # rm $CLOUD_INIT_FILE &> /dev/null
