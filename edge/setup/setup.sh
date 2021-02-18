@@ -321,7 +321,7 @@ if [[ "$OWN_DEVICE" == "N" ]]; then
     echo "AAD_TENANT_ID=$AAD_TENANT_ID" >> $ENV_FILE
     echo "AAD_SERVICE_PRINCIPAL_ID=$AAD_SERVICE_PRINCIPAL_ID" >> $ENV_FILE
     echo "AAD_SERVICE_PRINCIPAL_SECRET=$AAD_SERVICE_PRINCIPAL_SECRET" >> $ENV_FILE
-    echo "VIDEO_INPUT_FOLDER_ON_DEVICE=\"/home/lvaadmin/samples/input\"" >> $ENV_FILE
+    echo "VIDEO_INPUT_FOLDER_ON_DEVICE=\"/home/edgeuser/samples/input\"" >> $ENV_FILE
     echo "VIDEO_OUTPUT_FOLDER_ON_DEVICE=\"/var/media\"" >> $ENV_FILE
     echo "APPDATA_FOLDER_ON_DEVICE=\"/var/lib/azuremediaservices\"" >> $ENV_FILE
     echo "CONTAINER_REGISTRY_USERNAME_myacr=$CONTAINER_REGISTRY_USERNAME" >> $ENV_FILE
@@ -470,7 +470,7 @@ elif [[ "$OWN_DEVICE" = "Y" ]]; then
     echo "AAD_TENANT_ID=$AAD_TENANT_ID" >> $BYOD_ENV_FILE
     echo "AAD_SERVICE_PRINCIPAL_ID=$AAD_SERVICE_PRINCIPAL_ID" >> $BYOD_ENV_FILE
     echo "AAD_SERVICE_PRINCIPAL_SECRET=$AAD_SERVICE_PRINCIPAL_SECRET" >> $BYOD_ENV_FILE
-    echo "VIDEO_INPUT_FOLDER_ON_DEVICE=\"/home/lvaadmin/samples/input\"" >> $BYOD_ENV_FILE
+    echo "VIDEO_INPUT_FOLDER_ON_DEVICE=\"/home/edgeuser/samples/input\"" >> $BYOD_ENV_FILE
     echo "VIDEO_OUTPUT_FOLDER_ON_DEVICE=\"/var/media\"" >> $BYOD_ENV_FILE
     echo "APPDATA_FOLDER_ON_DEVICE=\"/var/lib/azuremediaservices\"" >> $BYOD_ENV_FILE
     echo "CONTAINER_REGISTRY_USERNAME_myacr=$CONTAINER_REGISTRY_USERNAME" >> $BYOD_ENV_FILE
