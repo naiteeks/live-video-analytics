@@ -7,7 +7,7 @@
 ##################################################################################################
 
 sudo groupadd -g 1010 localusergroup
-sudo useradd --home-dir /home/edgeuser --uid 1010 --gid 1010 lvaedgeuser
+sudo useradd --home-dir /home/lvaedgeuser --uid 1010 --gid 1010 lvaedgeuser
 sudo mkdir -p /home/lvaedgeuser
 
 sudo mkdir -p /home/lvaedgeuser/samples
