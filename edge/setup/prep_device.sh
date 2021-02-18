@@ -4,8 +4,11 @@
 # This script creates folders and downloads the media samples needed for running LVA
 #######################################################################################################################
 
+sudo groupadd -g 1010 localuser
+sudo adduser --home /home/edgeuser --uid 1010 -gid 1010 edgeuser
+
 sudo mkdir /home/lvaadmin
-sudo chown -R iotedge-user:users /home/lvaadmin/
+sudo chown -R edgeuser:localuser /home/lvaadmin/
 
 mkdir /home/lvaadmin/samples
 mkdir /home/lvaadmin/samples/input
@@ -21,6 +24,6 @@ sudo mkdir /var/local/mediaservices/tmp
 sudo mkdir /var/lib/azuremediaservices
 sudo mkdir /var/media
 
-sudo chown -R iotedge-user:users /var/local/mediaservices/
-sudo chown -R iotedge-user:users /var/lib/azuremediaservices/
-sudo chown -R iotedge-user:users /var/media/
+sudo chown -R edgeuser:localuser /var/local/mediaservices/
+sudo chown -R edgeuser:localuser /var/lib/azuremediaservices/
+sudo chown -R edgeuser:localuser /var/media/
