@@ -371,7 +371,7 @@ elif [[ "$OWN_DEVICE" = "Y" ]]; then
     echo -e "\nNow we'll deploy some resources to ${GREEN}${RESOURCE_GROUP}.${NC} This typically takes a few minutes."
     echo -e "\nThe resources are defined in a template here:- ${BLUE}${BYOD_ARM_TEMPLATE_URL}${NC}"
 
-    az deployment group create --resource-group $RESOURCE_GROUP --template-file $BYOD_ARM_TEMPLATE_URL -p hubName=$IOTHUB
+    az deployment group create --resource-group $RESOURCE_GROUP --template-file $BYOD_ARM_TEMPLATE_URL --parameters hubName=$IOTHUB
     checkForError
   
     # query the resource group to see what has been deployed
