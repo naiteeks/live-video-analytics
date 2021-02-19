@@ -452,7 +452,7 @@ elif [[ "$OWN_DEVICE" = "Y" ]]; then
     # The brand-new AMS account has a standard streaming endpoint in stopped state. 
     # A Premium streaming endpoint is recommended when recording multiple days worth of video
 
-	sleep 30
+	sleep 60
 
     echo -e "
     Updating the Media Services account to use one ${YELLOW}Premium${NC} streaming endpoint."
