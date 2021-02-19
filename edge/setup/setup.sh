@@ -28,8 +28,6 @@ CLOUD_INIT_URL="$BASE_URL/cloud-init.yml"
 CLOUD_INIT_FILE='cloud-init.yml'
 DEPLOYMENT_MANIFEST_URL="$BASE_URL/deployment.template.json"
 DEPLOYMENT_MANIFEST_FILE='edge-deployment/deployment.amd64.json'
-ROLE_DEFINITION_URL="$BASE_URL/LVAEdgeUserRoleDefinition.json"
-ROLE_DEFINITION_FILE='role_definition.json'
 RESOURCE_GROUP='lva-sample-resources'
 IOT_EDGE_VM_NAME='lva-sample-iot-edge-device'
 IOT_EDGE_VM_ADMIN='lvaadmin'
@@ -72,7 +70,6 @@ if [ "$AZURE_HTTP_USER_AGENT" = "cloud-shell/1.0" ]; then
     VM_CREDENTIALS_FILE="$CLOUD_SHELL_FOLDER/$VM_CREDENTIALS_FILE"
     CLOUD_INIT_FILE="$CLOUD_SHELL_FOLDER/$CLOUD_INIT_FILE"
     DEPLOYMENT_MANIFEST_FILE="$CLOUD_SHELL_FOLDER/$DEPLOYMENT_MANIFEST_FILE"
-    ROLE_DEFINITION_FILE="$CLOUD_SHELL_FOLDER/$ROLE_DEFINITION_FILE"
     BYOD_ENV_FILE="$BYOD_ENV_FILE"
     BYOD_DEPLOYMENT_MANIFEST_FILE="$BYOD_DEPLOYMENT_MANIFEST_FILE"
 	BYOD_APP_SETTINGS_FILE="$BYOD_APP_SETTINGS_FILE"
@@ -176,7 +173,7 @@ if [[ "$OWN_DEVICE" == "N" ]]; then
     The resources are defined in a template here:
     ${BLUE}${ARM_TEMPLATE_URL}${NC}"
 
-    ROLE_DEFINITION_NAME=$(az deployment group create --resource-group $RESOURCE_GROUP --template-uri $ARM_TEMPLATE_URL --query properties.outputs.roleName.value | tr -d \")
+    az deployment group create --resource-group $RESOURCE_GROUP --template-uri $ARM_TEMPLATE_URL -o none
     checkForError
 
     # query the resource group to see what has been deployed
@@ -233,25 +230,8 @@ if [[ "$OWN_DEVICE" == "N" ]]; then
     re="SubscriptionId:\s([0-9a-z\-]*)"
     SUBSCRIPTION_ID=$([[ "$AMS_CONNECTION" =~ $re ]] && echo ${BASH_REMATCH[1]})
 
-    # create new role definition in the subscription
-    # if test -z "$(az role definition list -n "$ROLE_DEFINITION_NAME" | grep "roleName")"; then
-    #    echo -e "Creating a custom role named ${BLUE}$ROLE_DEFINITION_NAME${NC}."
-    #    curl -sL $ROLE_DEFINITION_URL > $ROLE_DEFINITION_FILE
-    #    sed -i "s/\$SUBSCRIPTION_ID/$SUBSCRIPTION_ID/" $ROLE_DEFINITION_FILE
-    #    sed -i "s/\$ROLE_DEFINITION_NAME/$ROLE_DEFINITION_NAME/" $ROLE_DEFINITION_FILE
-  
-    #    az role definition create --role-definition $ROLE_DEFINITION_FILE -o none
-    #    checkForError
-    # fi
-
     # capture object_id
     OBJECT_ID=$(az ad sp show --id ${AAD_SERVICE_PRINCIPAL_ID} --query 'objectId' | tr -d \")
-
-    # create role assignment
-    # az role assignment create --role "$ROLE_DEFINITION_NAME" --assignee-object-id $OBJECT_ID -o none
-    # echo -e "The service principal with object id ${OBJECT_ID} is now linked with custom role ${BLUE}$ROLE_DEFINITION_NAME${NC}."
-    # The brand-new AMS account has a standard streaming endpoint in stopped state. 
-    # A Premium streaming endpoint is recommended when recording multiple days worth of video
 
     echo -e "
     Updating the Media Services account to use one ${YELLOW}Premium${NC} streaming endpoint."
@@ -391,7 +371,7 @@ elif [[ "$OWN_DEVICE" = "Y" ]]; then
     echo -e "\nNow we'll deploy some resources to ${GREEN}${RESOURCE_GROUP}.${NC} This typically takes a few minutes."
     echo -e "\nThe resources are defined in a template here:- ${BLUE}${BYOD_ARM_TEMPLATE_URL}${NC}"
 
-    ROLE_DEFINITION_NAME=$(az deployment group create --resource-group $RESOURCE_GROUP --template-file $BYOD_ARM_TEMPLATE_URL -p hubName=$IOTHUB --query properties.outputs.roleName.value | tr -d \")
+    az deployment group create --resource-group $RESOURCE_GROUP --template-uri $BYOD_ARM_TEMPLATE_URL --parameters hubName=$IOTHUB -o none
     checkForError
   
     # query the resource group to see what has been deployed
@@ -530,7 +510,5 @@ elif [[ "$OWN_DEVICE" = "Y" ]]; then
 fi
 
 # cleanup
-
-# rm $ROLE_DEFINITION_FILE &> /dev/null
 
 # rm $CLOUD_INIT_FILE &> /dev/null
